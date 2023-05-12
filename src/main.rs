@@ -40,7 +40,8 @@ fn run_file(path: &str) -> io::Result<()> {
             new_content.push_str(&new_line);
             new_content.push_str("\n");
         } else {
-            new_content.push_str(line);
+            let new_line = replace_quotes(line);
+            new_content.push_str(&new_line);
             new_content.push_str("\n");
         }
     }
@@ -56,3 +57,28 @@ fn run_file(path: &str) -> io::Result<()> {
 fn is_chinese(s: &str) -> bool {
     s.trim().chars().any(|c| c >= '\u{4E00}' && c <= '\u{9FFF}')
 }
+
+fn replace_quotes(s: &str) -> String {
+    let mut result = String::new();
+    let mut is_open_quote = false;
+
+    for (i, c) in s.chars().enumerate() {
+        match c {
+          ' ' => continue,
+            '\"' => {
+              if s.chars().nth(i-1).unwrap() == ' ' {
+                if is_open_quote {
+                    result.push('”'); // 中文右引号
+                } else {
+                    result.push('“'); // 中文左引号
+                }
+                is_open_quote = !is_open_quote;
+              }
+            },
+            _ => result.push(c),
+        }
+    }
+
+    result
+}
+
