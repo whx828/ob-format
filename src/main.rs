@@ -1,7 +1,6 @@
+use clap::Parser;
 use std::fs::File;
 use std::io::{self, BufReader, BufWriter, Read, Write};
-use clap::Parser;
-
 
 /// Obsidian md format
 #[derive(Parser, Debug)]
@@ -36,13 +35,22 @@ fn run_file(path: &str) -> io::Result<()> {
     // 修改文件内容
     for line in content.lines() {
         if !is_chinese(&line) {
-            let new_line = line.replace("“", "\"").replace("”", "\"").replace("’", "\'").replace("‘", "\'");
+            let new_line = line
+                .replace("“", "\"")
+                .replace("”", "\"")
+                .replace("’", "\'")
+                .replace("‘", "\'");
             new_content.push_str(&new_line);
             new_content.push_str("\n");
         } else {
-            let new_line = replace_quotes(line);
-            new_content.push_str(&new_line);
-            new_content.push_str("\n");
+            if line.starts_with("{") {
+                new_content.push_str(line);
+                new_content.push_str("\n");
+            } else {
+                let new_line = replace_quotes(line);
+                new_content.push_str(&new_line);
+                new_content.push_str("\n");
+            }
         }
     }
 
@@ -64,21 +72,22 @@ fn replace_quotes(s: &str) -> String {
 
     for (i, c) in s.chars().enumerate() {
         match c {
-          ' ' => continue,
-            '\"' => {
-              if s.chars().nth(i-1).unwrap() == ' ' {
-                if is_open_quote {
-                    result.push('”'); // 中文右引号
+            ' ' => {
+                if s.chars().nth(i + 1).unwrap() == '\"' {
+                    if is_open_quote {
+                        result.push('”'); // 中文右引号
+                    } else {
+                        result.push('“'); // 中文左引号
+                    }
+                    is_open_quote = !is_open_quote;
                 } else {
-                    result.push('“'); // 中文左引号
+                    result.push(c)
                 }
-                is_open_quote = !is_open_quote;
-              }
-            },
+            }
+            '\"' => continue,
             _ => result.push(c),
         }
     }
 
     result
 }
-
