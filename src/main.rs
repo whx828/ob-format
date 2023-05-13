@@ -43,11 +43,12 @@ fn run_file(path: &str) -> io::Result<()> {
             new_content.push_str(&new_line);
             new_content.push_str("\n");
         } else {
+            let line = line.replace("` ，", "`，").replace("` 。", "`。");
             if line.starts_with("{") {
-                new_content.push_str(line);
+                new_content.push_str(&line);
                 new_content.push_str("\n");
             } else {
-                let new_line = replace_quotes(line);
+                let new_line = replace_quotes(&line);
                 new_content.push_str(&new_line);
                 new_content.push_str("\n");
             }
@@ -73,7 +74,7 @@ fn replace_quotes(s: &str) -> String {
     for (i, c) in s.chars().enumerate() {
         match c {
             ' ' => {
-                if s.chars().nth(i + 1).unwrap() == '\"' {
+                if let Some('\"') = s.chars().nth(i + 1) {
                     if is_open_quote {
                         result.push('”'); // 中文右引号
                     } else {
