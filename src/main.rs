@@ -1,4 +1,5 @@
 use clap::Parser;
+use regex::Regex;
 use std::fs::File;
 use std::io::{self, BufReader, BufWriter, Read, Write};
 
@@ -43,7 +44,10 @@ fn run_file(path: &str) -> io::Result<()> {
             new_content.push_str(&new_line);
             new_content.push_str("\n");
         } else {
-            let line = line.replace("` ，", "`，").replace("` 。", "`。");
+            let re = Regex::new(r"`([^`]*)`").unwrap();
+            let result = re.replace_all(line, " `$1` ");
+
+            let line = result.replace("` ，", "`，").replace("` 。", "`。");
             if line.starts_with("{") {
                 new_content.push_str(&line);
                 new_content.push_str("\n");
