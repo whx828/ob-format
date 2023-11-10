@@ -44,18 +44,51 @@ fn run_file(path: &str) -> io::Result<()> {
             new_content.push_str(&new_line);
             new_content.push_str("\n");
         } else {
-            let re = Regex::new(r"`([^`]*)`").unwrap();
-            let result = re.replace_all(line, " `$1` ");
-
-            let line = result.replace("` ，", "`，").replace("` 。", "`。");
-            if line.starts_with("{") {
+            // 处理 ![[*]] || #*
+            if line.starts_with("!") || line.starts_with("#") {
                 new_content.push_str(&line);
                 new_content.push_str("\n");
-            } else {
-                let new_line = replace_quotes(&line);
-                new_content.push_str(&new_line);
-                new_content.push_str("\n");
+                continue;
             }
+
+            let line = replace_quotes(&line);
+
+            // 删除所有空格
+            let regex_space = Regex::new(r"\s+").unwrap();
+            let no_space_string = regex_space.replace_all(&line, "");
+
+            // 为中文字符串中的英文单词前后添加空格
+            let regex_en = Regex::new(r"([a-zA-Z0-9\_\-\+]+)").unwrap();
+            let en_space_string = regex_en.replace_all(&no_space_string, " $1 ");
+
+            // 处理 “*” 表达式
+            let regex_zh_qu = Regex::new(r"“(\s+)([^\s]*)(\s+)”").unwrap();
+            let new_string = regex_zh_qu.replace_all(&en_space_string, "“$2”");
+
+            // 处理 `*` 表达式
+            let re = Regex::new(r"`(\s+)([^`]*)(\s+)`").unwrap();
+            let result = re.replace_all(&new_string, " `$2` ");
+
+            // 处理标点边界条件
+            let line = result
+                .replace(" ，", "，")
+                .replace("， ", "，")
+                .replace(" 。", "。")
+                .replace("。 ", "。")
+                .replace(" 、", "、")
+                .replace("、 ", "、")
+                .replace("： ", "：")
+                .replace(" ：", "：")
+                .replace(" ！", "！")
+                .replace(" ）", "）")
+                .replace("（ ", "（")
+                .replace("/ ", "/")
+                .replace(" /", "/")
+                .replace("  ", " "); // `Event`*  *Trait -> `Event`* *Trait
+            let line = line.trim();
+
+            new_content.push_str(&line);
+            new_content.push_str("\n");
         }
     }
 

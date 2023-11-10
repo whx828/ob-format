@@ -1,150 +1,554 @@
-Many software projects emerge because—somewhere out there—a programmer had a personal problem to solve.  
-许多软件项目的出现是因为——在某个地方——程序员有个人问题需要解决。
+#每日记录
 
-That's more or less what happened to Graydon Hoare. In 2006, Hoare was a 29-year-old computer programmer working for Mozilla, the open-source browser company. Returning home to his apartment in Vancouver, he found that the elevator was out of order; its software had crashed. This wasn't the first time it had happened, either.   
-这或多或少发生在 Graydon Hoare 身上。 2006 年，Hoare 是一名 29 岁的计算机程序员，为开源浏览器公司 Mozilla 工作。回到温哥华的公寓，他发现电梯坏了；它的软件崩溃了。这也不是第一次发生了。
+日常记录
 
-Hoare lived on the 21st floor, and as he climbed the stairs, he got annoyed. "It's ridiculous," he thought, "that we computer people couldn't even make an _elevator_ that works without crashing!_"_ Many such crashes, Hoare knew, are due to problems with how a program uses memory. The software inside devices like elevators is often written in languages like C++ or C, which are famous for allowing programmers to write code that runs very quickly and is quite compact. The problem is those languages also make it easy to accidentally introduce memory bugs—errors that will cause a crash. Microsoft estimates that 70% of the vulnerabilities in its code are due to memory errors from code written in these languages.  
-霍尔住在 21 楼，爬楼梯时，他感到很恼火。 “这太荒谬了，”他想，“我们这些计算机人甚至无法制造出一部不会崩溃的电梯！” Hoare 知道，许多此类崩溃是由于程序使用内存的方式问题造成的。电梯等设备内部的软件通常是用 C++ 或 C 等语言编写的，这些语言以允许程序员编写运行速度非常快且非常紧凑的代码而闻名。问题是这些语言也很容易意外引入内存错误——这些错误会导致崩溃。 Microsoft 估计其代码中 70% 的漏洞是由于使用这些语言编写的代码的内存错误造成的。
+```progressbar
+kind: day-year
+width: 100%
+name: This Year
+```
 
-Most of us, if we found ourselves trudging up 21 flights of stairs, would just get pissed off and leave it there. But Hoare decided to do something about it. He opened his laptop and began designing a new computer language, one that he hoped would make it possible to write small, fast code without memory bugs. He named it Rust, after a group of remarkably hardy fungi that are, he says, "over-engineered for survival."  
-我们中的大多数人，如果发现自己要爬上 21 层楼梯，就会很生气，就把它留在那里。但霍尔决定为此做点什么。他打开他的膝上型电脑并开始设计一种新的计算机语言，他希望这种语言能够编写出没有内存错误的小而快速的代码。他将其命名为 Rust，以一组非常耐寒的真菌命名，他说这些真菌“为了生存而过度设计”。
+```progressbar
+kind: day-month
+width: 100%
+name: This mouth
+```
 
-Seventeen years later, Rust has become one of the hottest new languages on the planet—maybe _the_ hottest. There are 2.8 million coders writing in Rust, and companies from Microsoft to Amazon regard it as key to their future. The chat platform Discord used Rust to speed up its system, Dropbox uses it to sync files to your computer, and Cloudflare uses it to process more than 20% of all internet traffic.   
-十七年后，Rust 已成为地球上最热门的新语言之一——也许是最热门的。有 280 万编码员使用 Rust 编写代码，从微软到亚马逊，许多公司都将其视为未来的关键。聊天平台 Discord 使用 Rust 来加速其系统，Dropbox 使用它来将文件同步到您的计算机，而 Cloudflare 使用它来处理超过 20% 的互联网流量。
+```progressbar
+kind: day-week
+width: 100%
+name: This week
+```
 
-When the coder discussion board Stack Overflow conducts its annual poll of developers around the world, Rust has been rated the most "loved" programming language for seven years running. Even the US government is avidly promoting software in Rust as a way to make its processes more secure. The language has become, like many successful open-source projects, a barn-raising: there are now hundreds of die-hard contributors, many of them volunteers. Hoare himself stepped aside from the project in 2013, happy to turn it over to those other engineers, including a core team at Mozilla.  
-当程序员讨论区 Stack Overflow 对全球开发人员进行年度调查时，Rust 连续七年被评为最“受喜爱”的编程语言。甚至美国政府也在热切地推广 Rust 软件，以此作为使其流程更安全的一种方式。与许多成功的开源项目一样，该语言已经成为谷仓饲养：现在有数百名顽固的贡献者，其中许多是志愿者。 Hoare 本人在 2013 年退出了该项目，很高兴将其移交给其他工程师，包括 Mozilla 的核心团队。
+##一个任务
 
-It isn't unusual for someone to make a new computer language. Plenty of coders create little ones as side projects all the time. But it's meteor-strike rare for one to take hold and become part of the pantheon of well-known languages alongside, say, JavaScript or Python or Java. How did Rust do it?  
-创造一种新的计算机语言并不罕见。许多编码人员一直在创建小项目作为副项目。但是，像 JavaScript、Python 或 Java 这样的语言，能够站稳脚跟并成为知名语言万神殿的一部分，实属罕见。 Rust 是怎么做到的？
+```simple-time-tracker
 
-___
+```
 
-To grasp what makes Rust so useful, it's worth taking a peek beneath the hood at how programming languages deal with computer memory.  
-要了解是什么让 Rust 如此有用，值得深入了解编程语言如何处理计算机内存。
+### Interrupts is threads
 
-You could, very crudely, think of the dynamic memory in a computer as a chalkboard. As a piece of software runs, it's constantly writing little bits of data to the chalkboard, keeping track of which one is where, and erasing them when they're no longer needed. Different computer languages manage this in different ways, though. An older language like C or C++ is designed to give the programmer a lot of power over how and when the software uses the chalkboard. That power is useful: with so much control over dynamic memory, a coder can make the software run very quickly. That's why C and C++ are often used to write "bare metal" code, the sort that interacts directly with hardware. Machines that don't have an operating system like Windows or Linux, including everything from dialysis machines to cash registers, run on such code. (It's also used for more advanced computing: at some point an operating system needs to communicate with hardware. The kernels of Windows, Linux, and MacOS are all significantly written in C.)  
-粗略地说，您可以将计算机中的动态内存想象成一块黑板。当一个软件运行时，它会不断地向黑板上写入少量数据，跟踪其中的数据，并在不再需要时将其擦除。但是，不同的计算机语言以不同的方式管理它。 C 或 C++ 等较早的语言旨在赋予程序员很大的权力来决定软件如何以及何时使用黑板。这种能力很有用：通过对动态内存的如此多的控制，编码人员可以使软件运行得非常快。这就是为什么 C 和 C++ 经常用于编写“裸机”代码，即直接与硬件交互的那种。没有像 Windows 或 Linux 这样的操作系统的机器，包括从透析机到收银机的一切，都在这样的代码上运行。 （它也被用于更高级的计算：在某些时候操作系统需要与硬件通信。Windows、Linux 和 MacOS 的内核都是用 C 语言编写的。）
+> https://onevariable.com/blog/interrupts-is-threads/
 
-> **"It's _enjoyable_ to write Rust, which is maybe kind of weird to say, but it's just the language is fantastic. It's fun. You feel like a magician, and that never happens in other languages."  
-> “写 Rust 很愉快，这说起来可能有点奇怪，但这只是语言太棒了。好有趣。你觉得自己像个魔术师，这在其他语言中是绝不会发生的。”**
-> 
-> Parker Timmerman, software engineer  
-> Parker Timmerman，软件工程师
+I love the tattoo "shrimps is bugs" because it is both absurd, and mostly true. Technically shrimps are not bugs, but they share a lot of qualities.  
+我喜欢“虾是虫子”的纹身，因为它既荒谬，又真实。从技术上讲，虾并不是虫子，但它们有很多共同的品质。
 
-But as speedy as they are, languages like C and C++ come with a trade-off. They require the coder to keep careful track of what memory is being written to, and when to erase it. And if you accidentally forget to erase something? You can cause a crash: the software later on might try to use a space in memory it thinks is empty when there's really something there. Or you could give a digital intruder a way to sneak in. A hacker might discover that a program isn't cleaning up its memory correctly—information that _should_ have been wiped (passwords, financial info) is still hanging around—and sneakily grab that data. As a piece of C or C++ code gets bigger and bigger, it's possible for even the most careful coder to make lots of memory mistakes, filling the software with bugs.  
-但是，尽管速度很快，但像 C 和 C++ 这样的语言也需要权衡取舍。它们要求编码人员仔细跟踪正在写入的内存以及何时擦除它。如果您不小心忘记删除某些内容？你可能会导致崩溃：软件稍后可能会尝试使用内存中它认为是空的空间，而实际上那里确实有东西。或者，您可以为数字入侵者提供潜入的途径。黑客可能会发现某个程序没有正确清理其内存——本应被清除的信息（密码、财务信息）仍然存在——然后偷偷地抓住它数据。随着一段 C 或 C++ 代码变得越来越大，即使是最细心的编码人员也可能会犯很多内存错误，从而使软件充满错误。
+In the same way, I'd like to assert _interrupts is threads_.  
+同样，我想断言：中断是线程。
 
-"In C or C++ you always have this fear that your code will just randomly explode," says Mara Bos, cofounder of the drone firm Fusion Engineering and head of Rust's library team.  
-“在 C 或 C++ 中，你总是担心你的代码会随机爆炸，”无人机公司 Fusion Engineering 的联合创始人兼 Rust 库团队负责人 Mara Bos 说。
+#### Interrupts is threads
 
-In the '90s, a new set of languages like Java, JavaScript, and Python became popular. These took a very different approach. To relieve stress on coders, they automatically managed the memory by using "garbage collectors," components that would periodically clean up the memory as a piece of software was running. Presto: you could write code that didn't have memory mistakes. But the downside was a loss of that fine-grained control. Your programs also performed more sluggishly (because garbage collection takes up crucial processing time). And software written in these languages used much more memory. So the world of programming became divided, roughly, into two tribes. If software needed to run fast or on a tiny chip in an embedded device, it was more likely to be written in C or C++. If it was a web app or mobile-phone app—an increasingly big chunk of the world of code—then you used a newer, garbage-collected language.  
-在 20 世纪 90 年代，一组新的语言如 Java、JavaScript 和 Python 开始流行。这些采取了非常不同的方法。为了减轻编码人员的压力，他们使用“垃圾收集器”自动管理内存，这些组件会在软件运行时定期清理内存。 Presto：您可以编写没有内存错误的代码。但缺点是失去了细粒度的控制。您的程序也执行得更慢（因为垃圾收集占用了关键的处理时间）。用这些语言编写的软件使用了更多的内存。因此，编程世界大致分为两个部落。如果软件需要快速运行或在嵌入式设备的微型芯片上运行，则更有可能用 C 或 C++ 编写。如果它是一个网络应用程序或手机应用程序——代码世界中越来越大的一部分——那么你使用了一种更新的、垃圾收集的语言。
+In embedded, unless you are using a real time operating system, you often don't have "threads" like you would on your desktop. Threads have two main interesting qualities in this context:  
+在嵌入式中，除非您使用实时操作系统，否则通常没有像桌面上那样的“线程”。在这种情况下，线程有两个主要有趣的特性：
+- They are pre-emptively scheduled  
+他们是抢占式调度的
+- They have separate stacks/resources  
+他们有单独的栈 / 资源
 
-With Rust, Hoare aimed to create a language that split the difference between these approaches. It wouldn't require programmers to manually figure out where in memory they were putting data; Rust would do that. But it would impose many strict rules on how data could be used or copied inside a program. You'd have to learn those coding rules, which would be more onerous than the ones in Python or JavaScript. Your code would be harder to write, but it'd be "memory safe"—no fears that you'd accidentally inserted lethal memory bugs. Crucially, Rust would also offer "concurrency safety." Modern programs do multiple things at once—concurrently, in other words—and sometimes those different threads of code try to modify the same piece of memory at nearly the same time. Rust's memory system would prevent this.  
-对于 Rust，Hoare 旨在创建一种语言来区分这些方法之间的差异。它不需要程序员手动找出他们在内存中放置数据的位置； Rust 会那样做。但它会对如何在程序中使用或复制数据施加许多严格的规则。你必须学习那些编码规则，这比 Python 或 JavaScript 中的规则更繁琐。你的代码会更难写，但它是“内存安全的”——不用担心你会不小心插入致命的内存错误。至关重要的是，Rust 还将提供“并发安全”。现代程序一次做多件事——换句话说，并发——有时这些不同的代码线程几乎同时尝试修改同一块内存。 Rust 的内存系统会阻止这种情况。
+**We model interrupts "as if they were threads"** in embedded Rust, because as far as Rust's safety guarantees are concerned, they ARE exactly the same.  
+我们在嵌入式 Rust 中对中断进行建模，“就好像它们是线程一样”，因为就 Rust 的安全保证而言，它们是完全相同的。
 
-When he first opened his laptop to begin designing Rust, Hoare was already a 10-year veteran of software, working full time at Mozilla. Rust was just a side project at first. Hoare beavered away at it for a few years, and when he showed it to other coders, reaction was mixed. "Some enthusiasm," he told me in an email. "A lot of eye-rolls and 'This will never work' or 'This will never be usable.'"  
-当他第一次打开笔记本电脑开始设计 Rust 时，Hoare 已经是一名拥有 10 年软件经验的老手，全职在 Mozilla 工作。 Rust 起初只是一个副项目。 Hoare 花了几年时间研究它，当他把它展示给其他编码员时，反应不一。 “有些热情，”他在一封电子邮件中告诉我。 “很多人翻白眼，‘这永远行不通’或‘这永远无法使用。’”
+##### Pre-emptive scheduling
 
-Executives at Mozilla, though, were intrigued. Rust, they realized, could help them build a better browser engine. Browsers are notoriously complex pieces of software with many opportunities for dangerous memory bugs.  
-不过，Mozilla 的高管对此很感兴趣。他们意识到，Rust 可以帮助他们构建更好的浏览器引擎。浏览器是出了名的复杂软件，有很多机会出现危险的内存错误。
+As threads are pre-emptively scheduled, one chunk of code might be stopped at ANY time, and another chunk of code may start running.  
+由于线程是抢占式调度的，一段代码可能会随时停止，而另一段代码可能会开始运行。
 
-One employee who got involved was Patrick Walton, who'd joined Mozilla after deciding to leave his PhD studies in programming languages. He remembers Brendan Eich, the inventor of JavaScript, pulling him into a meeting at Mozilla: "He said, 'Why don't you come into this room where we're going to discuss design decisions for Rust?'" Walton thought Rust sounded fantastic; he joined Hoare and a growing group of engineers in developing the language. Many, like Mozilla engineers Niko Matsakis and Felix Klock, had academic experience researching memory and coding languages.  
-参与其中的一名员工是帕特里克·沃尔顿 (Patrick Walton)，他在决定放弃编程语言的博士学位后加入了 Mozilla。他记得 JavaScript 的发明者布伦丹·艾希 (Brendan Eich) 把他拉进了 Mozilla 的一次会议：“他说，‘你为什么不进这个房间，我们将讨论 Rust 的设计决策？’”沃尔顿认为 Rust 听起来极好的;他与 Hoare 和越来越多的工程师一起开发该语言。许多人，例如 Mozilla 工程师 Niko Matsakis 和 Felix Klock，都有研究内存和编码语言的学术经验。
+Similar to a thread context switch: interrupts can happen at any time! The only difference is that the _hardware_ is doing context switching for us, rather than some operating system.  
+类似于线程上下文切换：中断随时可能发生！唯一的区别是：硬件为我们进行上下文切换，而不是操作系统。
 
-![headshots of Walton, Matsakis, Klock, and Goregaokar ](https://wp.technologyreview.com/wp-content/uploads/2023/02/MA23-back-rust-heads.png?w=3000)
+For threads OR interrupts, this means that anything shared across them must either be read-only, or be synchronized in some way to avoid race conditions or other data corruption.  
+对于线程或中断，这意味着它们之间共享的任何内容都必须是只读的，或者以某种方式同步以避免竞争条件或其他数据损坏。
 
-Executives at Mozilla realized Rust could help them build a better browser engine, and they put several engineers on the project. These included Patrick Walton (1), who had joined Mozilla after deciding to leave his PhD studies in programming languages; Niko Matsakis (2) and Felix Klock (3), both of whom had academic experience researching memory and coding languages; and Manish Goregaokar (4), who currently runs Rust's developer tools team.  
-Mozilla 的高管意识到 Rust 可以帮助他们构建更好的浏览器引擎，他们派了几名工程师参与该项目。其中包括帕特里克·沃尔顿 (Patrick Walton) (1)，他在决定放弃编程语言的博士学位后加入了 Mozilla； Niko Matsakis (2) 和 Felix Klock (3)，他们都有研究记忆和编码语言的学术经验； Manish Goregaokar (4)，目前负责 Rust 的开发者工具团队。
+In Rust, we have two ways of making sure these safety rules are followed, both enforced by the compiler:  
+在 Rust 中，我们有两种方法来确保遵循这些安全规则，均由编译器强制执行：
+- `Send`, which says you can GIVE something from one thread to another  
+`Send`，表示您可以将某些内容从一个线程传递给另一个线程
+- `Sync`, which says you can SHARE something between one or more threads  
+`Sync`，表示您可以在一个或多个线程之间共享某些内容
 
-COURTESY PHOTOS 礼貌照片
+##### Separate stacks
 
-In 2009, Mozilla decided to officially sponsor Rust. The language would be open source, and accountable only to the people making it, but Mozilla was willing to bootstrap it by paying engineers. A Rust group took over a conference room at the company; Dave Herman, cofounder of Mozilla Research, dubbed it "the nerd cave" and posted a sign outside the door. Over the next 10 years, Mozilla employed over a dozen engineers to work on Rust full time, Hoare estimates.  
-2009 年，Mozilla 决定正式赞助 Rust。该语言将是开源的，并且只对制作它的人负责，但 Mozilla 愿意通过支付工程师费用来引导它。一个 Rust 小组接管了公司的一间会议室； Mozilla Research 的联合创始人 Dave Herman 将其称为“书呆子洞穴”，并在门外张贴了一个标志。 Hoare 估计，在接下来的 10 年里，Mozilla 雇佣了十几名工程师全职研究 Rust。
+By having separate stacks, threads can keep their own local context across thread switching. This means if you have something on the stack, like local variables, switching to another thread doesn't affect that data in any way.  
+通过拥有自己的栈，线程可以在线程切换期间保留自己的本地上下文。这意味着如果栈上有某些内容（例如局部变量），切换到另一个线程不会对这些数据产生任何影响。
 
-"Everyone really felt like they were working on something that could be really big," Walton recalls. That excitement extended outside Mozilla's building, too. By the early 2010s, Rust was attracting volunteers from around the world, from every nook of tech. Some worked for big tech firms. One major contributor was a high school student in Germany. At a Mozilla conference in British Columbia in 2010, Eich stood up to say there'd be a talk on an experimental language, and "don't attend unless you're a real programming language nerd," Walton remembers. "And of course, it filled the room."  
-“每个人都真的觉得他们正在做一件可能非常大的事情，”沃尔顿回忆道。这种兴奋也延伸到了 Mozilla 的大楼之外。到 2010 年代初期，Rust 吸引了来自世界各地的志愿者，来自科技的各个角落。有些人在大型科技公司工作。一个主要贡献者是德国的一名高中生。 2010 年在不列颠哥伦比亚省举行的 Mozilla 会议上，Eich 站起来说会有一个关于实验语言的演讲，“除非你是一个真正的编程语言书呆子，否则不要参加，”Walton 回忆道。 “当然，它充满了整个房间。”
+Interrupts don't typically have their own stack, instead they typically share the main stack, or some privileged-mode stack common to all interrupts. However, they can't typically (at least safely) "see" the stack/local data from the main thread or other interrupts, and when they are done they are responsible for removing any data they did put on the stack.  
+中断通常没有自己的栈，而是通常共享主栈或所有中断共用的一些特权模式栈。但是，它们通常无法（至少安全地）“查看”来自主线程或其他中断的栈 / 本地数据，而且当它们完成工作后，它们自己必须负责删除栈上的任何数据。
 
-___
+This means _conceptually_ we can treat interrupts as if they have separate, ephemeral stacks, that _just happen_ to be on top of someone else's stack for as long as they are running.  
+这意味着从概念上讲，我们可以将中断视为具有单独的、短暂的栈，只要中断正在运行，它们就恰好位于其他栈的顶部。
 
-Through the early 2010s, Mozilla engineers and Rust volunteers worldwide gradually honed Rust's core—the way it is designed to manage memory. They created an "ownership" system so that a piece of data can be referred to by only one variable; this greatly reduces the chances of memory problems. Rust's compiler—which takes the lines of code you write and turns them into the software that runs on a computer—would rigorously enforce the ownership rules. If a coder violated the rules, the compiler would refuse to compile the code and turn it into a runnable program.  
-在 2010 年代初期，Mozilla 工程师和全球的 Rust 志愿者逐渐磨练了 Rust 的核心——它被设计用来管理内存的方式。他们创建了一个“所有权”系统，使一个数据只能由一个变量引用；这大大减少了内存问题的机会。 Rust 的编译器——将你编写的代码行转化为在计算机上运行的软件——将严格执行所有权规则。如果编码人员违反规则，编译器将拒绝编译代码并将其变成可运行的程序。
+The only difference is that _threads_ can be resumed with their previous stack/context data at any time, while interrupts must "start with nothing" and "end with nothing".  
+唯一的区别是：线程可以随时使用其先前的栈 / 上下文数据恢复；而中断必须“无任何开始”和“无任何结束”。
 
-Many of the tricks Rust employed weren't new ideas: "They're mostly decades-old research," says Manish Goregaokar, who runs Rust's developer-tools team and worked for Mozilla in those early years. But the Rust engineers were adept at finding these well-honed concepts and turning them into practical, usable features.  
-Rust 采用的许多技巧都不是新想法：“它们大多是几十年前的研究，”Manish Goregaokar 说，他负责 Rust 的开发人员工具团队，早年曾在 Mozilla 工作。但 Rust 工程师善于发现这些精心设计的概念，并将它们转化为实用、可用的功能。
+#### How do interrupts work?
 
-As the team improved the memory-management system, Rust had increasingly little need for its own garbage collector—and by 2013, the team had removed it. Programs written in Rust would now run even faster: no periodic halts while the computer performed cleanup. There are, Hoare points out, some software engineers who would argue that Rust still possesses elements that are a bit like garbage collection—its "reference counting" system, part of how its memory-ownership mechanics work. But either way, Rust's performance had become remarkably efficient. It dove closer to the metal, down to where C and C++ were—yet it was memory safe.  
-随着团队改进内存管理系统，Rust 越来越不需要自己的垃圾收集器——到 2013 年，团队已经将其移除。用 Rust 编写的程序现在运行得更快：计算机执行清理时不会定期停止。 Hoare 指出，一些软件工程师会争辩说 Rust 仍然拥有有点像垃圾收集的元素——它的“引用计数”系统，它的内存所有权机制工作方式的一部分。但无论哪种方式，Rust 的性能都变得非常高效。它更接近金属，接近 C 和 C++ 所在的位置——但它是内存安全的。
+In modern embedded devices, interrupts act sort of like a callback. When some event occurs, the CPU stops whatever code is currently running and "calls" the interrupt handler function. This function takes no arguments, and returns no values.  
+在现代嵌入式设备中，中断的作用有点像回调。当某些事件发生时，CPU 会停止当前正在运行的任何代码，并“调用”中断处理函数。该函数不带任何参数，也不返回任何值。
 
-Removing garbage collection "led to a leaner and meaner language," says Steve Klabnik, a coder who got involved with Rust in 2012 and wrote documentation for it for the next 10 years.  
-2012 年接触 Rust 并在接下来的 10 年里为它编写文档的编码员 Steve Klabnik 说，移除垃圾收集“导致了一种更精简和更简洁的语言”。
+In Rust terms, this means that the function looks like:  
+用 Rust 来说，这意味着该函数如下所示：
 
-Along the way, the Rust community was also building a culture that was known for being unusually friendly and open to newcomers. "No one ever calls you a _noob_," says Nell Shamrell-Harrington, a principal engineer at Microsoft who at the time worked on Rust at Mozilla. "No question is considered a stupid question."   
-在此过程中，Rust 社区也在建立一种文化，这种文化以对新人异常友好和开放而闻名。 “从来没有人称你为菜鸟，”微软首席工程师 Nell Shamrell-Harrington 说，他当时在 Mozilla 从事 Rust 方面的工作。 “没有问题被认为是一个愚蠢的问题。”
+```rust
+fn handler() { /* ... */ }
+```
 
-Part of this, she says, is that Hoare had very early on posted a "code of conduct," prohibiting harassment, that anyone contributing to Rust was expected to adhere to. The community embraced it, and that, longtime Rust community members say, drew queer and trans coders to get involved in Rust in higher proportions than you'd find with other languages. Even the error messages that the compiler creates when the coder makes a mistake are unusually solicitous; they describe the error, and also politely suggest how to fix it.   
-她说，部分原因是 Hoare 很早就发布了禁止骚扰的“行为准则”，任何为 Rust 做出贡献的人都应该遵守。社区接受了它，并且，长期的 Rust 社区成员说，吸引酷儿和跨代码者参与 Rust 的比例高于其他语言。甚至当编码人员出错时编译器创建的错误消息也异常殷勤；他们描述错误，并礼貌地建议如何修复它。
+In C terms, this means that the function looks like:  
+用 C 来说，这意味着该函数如下所示：
 
-"The C and C++ compiler\[s\], when I make mistakes, make me feel like a _terrible_ person," Shamrell-Harrington says with a laugh. "The Rust compiler is more like it's guiding you to write super-safe code."  
-“C 和 C++ 编译器 \[s\]，当我犯错误时，让我觉得自己像个糟糕的人，”Shamrell-Harrington 笑着说。 “Rust 编译器更像是在指导你编写超级安全的代码。”
+```c
+void handler(void) { /* ... */ }
+```
 
-___
+These functions run to completion, there's generally no way to pause execution and pick back up later. Once the function is complete, the CPU picks up whatever it was doing prior to the interrupt.  
+这些函数会一直运行到结束，通常无法暂停执行，稍后再重新开始。一旦函数完成，CPU 就会重新开始中断前的工作。
 
-By 2015, the team was obsessed with finally releasing a "stable" version of Rust, one reliable enough for companies to use to make software for real customers. It had been six years since Mozilla took Rust under its wing, and during that long development time, coders had been eager to try demo versions, even though they could be janky: "The compiler broke all the time," Goregaokar says. Now it was time to get a "1.0" out into the world.  
-到 2015 年，该团队着迷于最终发布 Rust 的“稳定”版本，该版本足够可靠，可供公司用来为真实客户制作软件。自从 Mozilla 将 Rust 置于其羽翼之下已经六年了，在那段漫长的开发时间里，编码人员一直渴望尝试演示版本，尽管它们可能会很糟糕：“编译器一直都在崩溃，”Goregaokar 说。现在是时候将“1.0”推向世界了。
+In modern devices, interrupts can also often be pre-empted by other interrupts, if the second interrupt is a higher "priority". These are typically called "nested" interrupts.  
+在现代设备中，如果第二个中断具有更高的“优先级”，则中断通常也可以被其他中断抢占。这些通常称为“嵌套”中断。
 
-Walton remembers spending hours hunched over his laptop. Klabnik "wrote like 45 pages of documentation in the last two weeks," he recalls. On May 15, 2015, the group finally released the first version, and groups of Rust nerds gathered for parties worldwide to celebrate.  
-沃尔顿记得他曾在笔记本电脑前弯腰弯腰数小时。 Klabnik “在过去两周内写了大约 45 页的文档，”他回忆道。 2015 年 5 月 15 日，该小组终于发布了第一个版本，一群群 Rust 书呆子聚集在世界各地举办派对庆祝。
+Because these functions take and return no values, the main way of sharing something with them is to place the item in a static variable.  
+由于这些函数不接受也不返回任何值，因此与它们共享某些内容的主要方式是将项目放置在静态变量中。
 
-Mozilla's investment soon began to pay off. In 2016, a Mozilla group released Servo, a new browser engine built using Rust. The next year, another group used Rust to rewrite the part of Firefox that rendered CSS, a language used to specify the appearance of websites. The change gave the browser a noticeable performance boost. The company also used Rust to rewrite code that handled MP4 multimedia files and had been at risk of admitting unsafe, malicious code.  
-Mozilla 的投资很快开始收到回报。 2016 年，Mozilla 小组发布了 Servo，这是一种使用 Rust 构建的新浏览器引擎。第二年，另一个小组使用 Rust 重写了 Firefox 中渲染 CSS 的部分，CSS 是一种用于指定网站外观的语言。这一变化给浏览器带来了显着的性能提升。该公司还使用 Rust 重写处理 MP4 多媒体文件的代码，并面临承认不安全的恶意代码的风险。
+#### Static variables in Rust
 
-Rust developers—"Rustaceans," as they'd begun to call themselves—soon heard from other companies that were trying out their new language.   
-Rust 开发人员——他们开始称自己为“Rustaceans”——很快就听到其他公司正在尝试他们的新语言。
+Let's say we have a simple program in Rust:  
+假设我们有一个简单的 Rust 程序：
 
-Samsung coders told Klock, who was working from Mozilla's office in France, that they'd begun using it. Facebook (later known as Meta) used Rust to redesign software that its programmers use to manage their internal source code. "It's hard to overstate how important it is," says Walton, who works for Meta today.  
-三星程序员告诉在法国 Mozilla 办公室工作的 Klock，他们已经开始使用它了。 Facebook（后来称为 Meta）使用 Rust 来重新设计其程序员用来管理其内部源代码的软件。 “很难夸大它的重要性，”如今在 Meta 工作的沃尔顿说。
+```rust
+// This is the "main" thread. It is always running
+fn main() {
+    loop {
+        red_led_on();
+        green_led_on();
+        sleep_ms(250);
 
-Soon Rust was appearing at the core of some remarkably important software. In 2020, Dropbox unveiled a new version of its "sync engine"—the software that's responsible for synchronizing files between users' computers and Dropbox's cloud storage—that engineers had rewritten in Rust. The system was originally coded in Python, but it was now handling billions of files (and trillions of files synchronized online). Rust made it easier—even pleasant—to handle that complexity, says Parker Timmerman, a software engineer who recently left Dropbox.  
-很快，Rust 就出现在一些非常重要的软件的核心中。 2020 年，Dropbox 推出了其“同步引擎”的新版本——负责在用户计算机和 Dropbox 的云存储之间同步文件的软件——工程师用 Rust 重写了该引擎。该系统最初是用 Python 编写的，但现在要处理数十亿个文件（以及在线同步的数万亿个文件）。最近离开 Dropbox 的软件工程师 Parker Timmerman 说，Rust 使处理这种复杂性变得更容易，甚至是愉快。
+        red_led_off();
+        green_led_off();
+        sleep_ms(750);
+    }
+}
 
-"It's _enjoyable_ to write Rust, which is maybe kind of weird to say, but it's just the language is fantastic. It's fun. You feel like a magician, and that never happens in other languages," he says. "We definitely took a big bet—it's a new technology."  
-“写 Rust 很愉快，这说起来可能有点奇怪，但这只是语言太棒了。好有趣。你感觉自己像个魔术师，这在其他语言中是绝不会发生的，”他说。 “我们肯定下了一个大赌注——这是一项新技术。”
+// This is an interrupt handler. Let's pretend it is called
+// once every time a button is pressed, specifically in an
+// "edge triggered" way.
+#[interrupt]
+fn button_press_handler() {
+    // ?
+}
+```
 
-Some firms were discovering that Rust eased their terror about memory bugs; Mara Bos used Rust to completely rewrite her company's software for controlling drones, which was originally written in C++.   
-一些公司发现 Rust 减轻了他们对内存错误的恐惧； Mara Bos 使用 Rust 完全重写了她公司用于控制无人机的软件，该软件最初是用 C++ 编写的。
+This is a wonderful little program, which will blink two LEDs. But let's say we only want to blink one at a time, and switch which LED is blinking every time we press the button.  
+这是一个很棒的小程序，它会让两个 LED 闪烁。但假设我们一次只想闪烁一个，并且每次按下按钮时都要切换闪烁的 LED。
 
-Others were discovering the joys of abandoning garbage collection. At Discord, engineers had long been annoyed that the garbage collector in Go—the language they'd used to build critical chunks of their software—would slow things down. Their Go software would carry out the procedure roughly every two minutes, even though the Discord engineers had written things so carefully there was no garbage to be collected. In 2020, they rewrote that system in Rust, and discovered it now ran 10 times faster.   
-其他人正在发现放弃垃圾收集的乐趣。在 Discord，工程师们长期以来一直对 Go 中的垃圾收集器——他们用来构建软件关键块的语言——会减慢速度感到恼火。他们的 Go 软件大约每两分钟执行一次该过程，尽管 Discord 的工程师写得非常仔细，没有垃圾需要收集。 2020 年，他们用 Rust 重写了该系统，发现它现在运行速度提高了 10 倍。
+How do we get the "message" from the interrupt to the main thread that the button has been pressed? We might start by storing some boolean as a static that both can see:  
+我们如何从中断向主线程获取按钮已被按下的“消息”？我们可以先将某个布尔值存储为双方都能看到的静态值：
 
-Even executives and engineers at Amazon Web Services, the tech giant's cloud computing platform, have become increasingly convinced that Rust can help them write safer, faster code. "Rust is uniquely positioned to give advantages there that I can't get from other languages. It gives you multiple superpowers in one language," says Shane Miller, who created a Rust team at AWS before leaving the firm last year.   
-甚至科技巨头的云计算平台 Amazon Web Services 的高管和工程师也越来越相信 Rust 可以帮助他们编写更安全、更快的代码。 “Rust 具有独特的优势，可以提供我无法从其他语言获得的优势。它为您提供一种语言的多种超能力，”Shane Miller 说，他在去年离开公司之前在 AWS 创建了一个 Rust 团队。
+```rust hl:2,7-11,27
+// A static variable
+static BLINK_RED: bool = false;
 
-Perhaps most crucially for the cloud computing giant, a study of Rust-based code found it runs so efficiently that it uses [half as much electricity](https://greenlab.di.uminho.pt/wp-content/uploads/2017/10/sleFinal.pdf) as a similar program written in Java, a language commonly used at AWS. "So I could create a data center that runs 2X the workloads that I have today," Miller says. Or do the same work in a data center that's half the size, letting you tuck one into a city instead of planting it in an exurban field.  
-也许对这家云计算巨头来说最重要的是，一项对基于 Rust 的代码的研究发现，它的运行效率如此之高，以至于它使用的电量是用 Java 编写的类似程序的一半，Java 是 AWS 常用的一种语言。 “因此，我可以创建一个数据中心，其运行的工作负载是我目前的 2 倍，”Miller 说。或者在一个只有一半大小的数据中心做同样的工作，让你把一个数据中心塞进一个城市，而不是把它种植在郊区的田地里。
+// This is the "main" thread. It is always running
+fn main() {
+    loop {
+        if BLINK_RED {
+            red_led_on();
+        } else {
+            green_led_on();
+        }
+        sleep_ms(250);
 
-___
+        // We can turn both off, it's fine.
+        red_led_off();
+        green_led_off();
+        sleep_ms(750);
+    }
+}
 
-Some longtime contributors have been made a bit nervous by Rust's success. As tech giants adopt the language, they're also gaining more influence over it. They have enough money to pay engineers to work full time developing Rust; several of the leaders of Rust teams, for example, are employees at Amazon and Microsoft. Other valuable contributors have to do their Rust work in their spare time; Bos, for example, does contract work on Rust for Huawei, in addition to running her drone startup, but her role as the head of Rust's library team is unpaid.   
-Rust 的成功让一些长期贡献者感到有些紧张。随着科技巨头采用这种语言，他们也对它产生了更大的影响。他们有足够的钱支付工程师全职开发 Rust 的费用；例如，Rust 团队的几位领导者是亚马逊和微软的员工。其他有价值的贡献者必须在业余时间做他们的 Rust 工作；例如，Bos 除了运营她的无人机初创公司外，还为华为从事 Rust 方面的合同工作，但她作为 Rust 库团队负责人的角色是无偿的。
+// This is an interrupt handler. Let's pretend it is called
+// once every time a button is pressed, specifically in an
+// "edge triggered" way.
+#[interrupt]
+fn button_press_handler() {
+    // ERROR: BLINK_RED is not mutable!
+    BLINK_RED = !BLINK_RED;
+}
+```
 
-It's a common dynamic with open-source projects, Bos says: big companies can afford to participate more, and they can nudge a project toward solving problems that they care about but smaller firms may not. "It does give them some influence," she says. But thus far, she says, none of the firms have done anything to ring alarm bells. Klabnik, who's raised concerns about Amazon's involvement in Rust (and who left Rust last year), agrees. "Do I worry about it? Yeah. Do I think it's particularly bad or in a worse spot than many other places? No."  
-Bos 说，这是开源项目的共同动力：大公司有能力更多地参与，他们可以推动项目解决他们关心的问题，但小公司可能不会。 “这确实给了他们一些影响力，”她说。但到目前为止，她说，没有一家公司采取任何措施来敲响警钟。 Klabnik 对亚马逊参与 Rust 表示担忧（并于去年离开 Rust）表示同意。 “我担心吗？是的。我认为它比其他许多地方特别糟糕或更糟糕吗？不。”
+We solved one problem, we now have a variable that both the main thread and the interrupt handler can see! However Rust rightly complains that `BLINK_RED` is not mutable, which means we can't actually modify it.  
+我们解决了一个问题，现在我们有了一个主线程和中断处理程序都可以看到的变量！然而 Rust 正确地抱怨 `BLINK_RED` 不可变，这意味着我们实际上无法修改它。
 
-In 2021, the major tech firms paid to set up a nonprofit Rust Foundation to support volunteer coders. Led for its first two years by Miller, it offers $20,000 grants for programmers who want to work on some major feature of Rust, and "hardship" grants for contributors in short-term financial need. It's also funding the servers that host Rust's code, and paying for a tech firm to be available to ensure that they run 24/7. In classic open-source style, that work was previously done by "two volunteers who were basically on call 50% of their lives," Miller says. "One of them was a student in Italy."  
-2021 年，各大科技公司出资成立了一个非营利性 Rust 基金会，以支持志愿编码员。在 Miller 的头两年里，它为想要研究 Rust 某些主要功能的程序员提供 20,000 美元的资助，并为有短期财务需求的贡献者提供“困难”资助。它还为托管 Rust 代码的服务器提供资金，并为一家技术公司付费，以确保它们 24/7 全天候运行。在经典的开源风格中，这项工作以前是由“两名志愿者完成的，他们基本上有 50% 的时间在待命，”Miller 说。 “其中一个是意大利的学生。”
+You might say, okay, let's make it mutable:  
+你可能会说，好吧，让我们把它变成可变的：
 
-The language has, improbably and rapidly, grown up. If Rust was born in 2006, it is now heading out of its adolescence and into maturity. Auto firms are adopting Rust to build crucial code that runs cars; aerospace companies are taking it up too. "It's going to be used everywhere," predicts Dropbox's Timmerman. Microsoft executives have even publicly suggested what many other tech firms are likely pondering behind closed doors: that it will use Rust more and more for new code—and C and C++ less and less. Ultimately maybe never.  
-这种语言不可思议地迅速成长起来。如果说 Rust 诞生于 2006 年，那么它现在正走出青春期走向成熟期。汽车公司正在采用 Rust 来构建运行汽车的关键代码；航空航天公司也在接受它。 “它将被无处不在地使用，”Dropbox 的 Timmerman 预测道。微软高管甚至公开建议了许多其他科技公司可能正在闭门思索的事情：它将越来越多地使用 Rust 编写新代码——而 C 和 C++ 越来越少。最终也许永远不会。
+```rust hl:2
+// A static variable
+static mut BLINK_RED: bool = false;
 
-All that old C and C++ code that's already kicking around won't vanish; it'll remain in use, likely for many decades. But if Rust becomes the common way to write _new_ code that needs to be fast and bare-metal, we could begin to notice that—very gradually, year by year—our software landscape will grow more and more reliable: less crash-prone, less insecure.   
-所有已经运行的旧 C 和 C++ 代码都不会消失；它会继续使用，可能会持续数十年。但是，如果 Rust 成为编写需要快速和裸机的新代码的常用方法，我们可能会开始注意到——非常缓慢地，逐年——我们的软件环境将变得越来越可靠：不易崩溃，不那么不安全。
+// This is the "main" thread. It is always running
+fn main() {
+    loop {
+        // ERROR: Requires unsafe block!
+        if BLINK_RED {
+            red_led_on();
+        } else {
+            green_led_on();
+        }
+        sleep_ms(250);
 
-That would astonish no one more than Hoare. "Most languages," he says, "just die on the vine."  
-没有人比霍尔更吃惊了。 “大多数语言，”他说，“只是半途而废。”
+        // We can turn both off, it's fine.
+        red_led_off();
+        green_led_off();
+        sleep_ms(750);
+    }
+}
 
-_Clive Thompson is a science and technology journalist based in New York City and author of_ Coders: The Making of a New Tribe and the Remaking of the World_._  
-克莱夫·汤普森 (Clive Thompson) 是纽约市的一名科技记者，也是《编码员：新部落的形成和世界的重塑》一书的作者。
-中文歌 `ad` 斤斤计较
+// This is an interrupt handler. Let's pretend it is called
+// once every time a button is pressed, specifically in an
+// "edge triggered" way.
+#[interrupt]
+fn button_press_handler() {
+    // ERROR: Requires unsafe block!
+    BLINK_RED = !BLINK_RED;
+}
+```
+
+But now Rust will complain for a different reason: `static mut` variables are unsafe to access, because they are _unsynchronized_, meaning there is no protection from multiple threads accessing the data at the same time.  
+但现在 Rust 会因为不同的原因而抱怨：`staticmut` 变量访问是**不安全**的，因为它们是不同步的，这意味着无法防止多个线程同时访问数据。
+
+You COULD just add `unsafe` blocks, and it would compile, _but that's undefined behavior_!  
+您可以只添加 `unsafe` 块，它就会编译，但这是 _ 未定义行为 _！
+
+Even this simple line:  
+即使是这样简单的一行：
+
+```rust
+BLINK_RED = !BLINK_RED;
+```
+
+is theoretically problematic, because at an assembly level (in load-store architectures, like Arm and RISC-V are), it actually looks something like this:  
+理论上也是有问题的，因为在汇编级别（在加载存储架构中，如 Arm 和 RISC-V），它实际上看起来像这样：
+
+```rust
+let mut temp = BLINK_RED;   // load value into register
+temp = !temp;               // invert boolean
+BLINK_RED = temp;           // store value back to static
+```
+
+If we had multiple interrupts accessing this code, it could end up causing problems, because we could have something like this happen:  
+如果我们有多个中断访问这段代码，最终可能会导致问题，因为我们可能会发生这样的事情：
+
+```rust
+let mut temp0 = BLINK_RED;  // first interrupt loads value
+temp0 = !temp0;             // first interrupt inverts
+// A second interrupt occurs!
+    let mut temp1 = BLINK_RED;  // second interrupt loads value
+    temp1 = !temp1;             // second interrupt inverts
+    BLINK_RED = temp1;          // second interrupt stores
+// Second interrupt ends, first resumes
+BLINK_RED = temp0;          // first interrupt stores
+```
+
+This is problematic, because even though two events happened, it looks like only one happened. If we started with `BLINK_RED = false`, it would be `true` after this sequence occurs, even though the first event should have gone `false -> true` and the second should have gone `true -> false`.  
+这是有问题的，因为即使发生了两件事，但看起来只发生了一件。如果我们从 `BLINK_RED = false` 开始，那么尽管第一个事件应该是 `false- > true`，第二个事件应该是 `true- > false`，但这个序列发生后，它还是 `true`。
+
+For larger or more complex variables, we can also run into "read tearing" and "write tearing", where we can be interrupted halfway through, leaving the data in an inconsistent or "corrupted" state.  
+对于更大或更复杂的变量，我们还可能遇到“读撕裂”和“写撕裂”，我们可以在中途被中断，使数据处于不一致或“损坏”的状态。
+
+This is the core reason why static mutable variables are unsafe in Rust, they can very very easily cause Undefined Behavior!  
+这就是 Rust 中静态可变变量不安全的核心原因，它们很容易导致 _ 未定义行为 _！
+
+#### How do we solve this?
+
+We solve this the same way as you do in desktop Rust! Whatever we want to share data between two "threads", we need to use some kind of data that is synchronized.  
+我们解决这个问题的方式与您在桌面 Rust 中的方式相同！无论我们想在两个“线程”之间共享数据，我们都需要使用某种同步的数据。
+
+##### Shared Data - `Sync`
+
+Since global variables are shared, this means we need some kind of `Sync` data!  
+由于全局变量是共享的，这意味着我们需要某种 `Sync` 数据！
+
+This usually means using one of two main kinds of data:  
+这通常意味着使用两种主要数据之一：
+- an `Atomic` variable, for values short enough to be modified in a single operation  
+`Atomic` 变量，其值足够短，可以在单个操作中修改
+- Some kind of `Mutex`, preventing multiple simultaneous access  
+某种 `Mutex`，防止同时访问
+
+These both work in a similar manner, they use something called "Inner Mutability", meaning the outer container is not mutable, but allow for mutation inside of them, using some kind of specific, safe operation (like using "Compare and Swap" operations, or some kind of runtime checked Mutex). Internally, these structures use some kind of careful unsafe code to ensure that access is safe.  
+它们都以类似的方式工作，都使用了一种称为“内部可变性”的东西，这意味着外部容器是不可变的，但允许在其内部使用某种特定的安全操作（如使用“比较和交换”操作，或某种运行时检查的 Mutex）进行变异。在内部，这些结构使用某种谨慎的不安全代码来确保访问安全。
+
+The atomic code would look a little something like this:  
+原子代码看起来有点像这样：
+
+```rust hl:2,6-10,25
+// Note: NOT mutable!
+static BLINK_RED: AtomicBool = AtomicBool::new(false);
+
+fn main() {
+    loop {
+        if BLINK_RED.load(Ordering::Relaxed) {
+            red_led_on();
+        } else {
+            green_led_on();
+        }
+        sleep_ms(250);
+
+        // We can turn both off, it's fine.
+        red_led_off();
+        green_led_off();
+        sleep_ms(750);
+    }
+}
+
+#[interrupt]
+fn button_press_handler() {
+    // a value XORd with true inverts it. There is a
+    // fetch_not function that does this directly, but it
+    // isn't stable, so this works.
+    BLINK_RED.fetch_xor(true, Ordering::Relaxed);
+}
+```
+
+I explain atomics and mutexes in more detail in the appendix section below, but for now, it's okay to take away:  
+我在下面的附录部分中更详细地解释了原子和互斥锁，但现在可以简单总结：
+- Only values that are `Sync` can be stored in statics  
+只有 `Sync` 的值可以存储在静态变量中
+- Only structures that are safe to use across threads are marked `Sync`  
+只有可以安全跨线程使用的结构才会被标记为 `Sync`
+
+**This means that _at compile time_, we can guarantee that any shared data is "interrupt safe", the same way we can guarantee the data is "thread safe".**
+**这意味着在编译时，我们可以保证任何共享数据是“中断安全”的，就像我们可以保证数据是“线程安全”的一样**。
+
+##### Shared Data - `Send`
+
+Since interrupts don't have any context that is "theirs" (remember, they take no arguments, and have no 'context' field), `Send` is typically a little less directly relevant for interrupts.  
+由于中断没有任何属于“它们自己的”上下文（请记住，它们不接受参数，也没有“上下文”字段），因此 `Send` 通常与中断不太直接相关。
+
+However, most `Sync` structures, like `Mutex`s or `Channel`s might require that whatever you put in them must be `Send`. This means conceptually, the relevant data is safe to be "given to" the mutex, or "taken from" the mutex.  
+但是，大多数 `Sync` 结构（例如 `Mutex` 或 `Channel`）可能要求您放入其中的任何内容都必须是 `Send`。这意味着从概念上讲，相关数据可以安全地“给予”互斥锁，或从互斥锁“获取”。
+
+Most commonly, this prevents you from putting "borrowed" data inside of the mutex. For example, you can't put a reference to some data on the stack inside of a static mutex, because at some point you could release the data and the static would still be holding a now-invalid reference!  
+最常见的是，这会阻止您将“借用”的数据放入互斥锁中。例如，你不能将栈中某些数据的引用放在静态互斥锁内部，因为在某些时候，你可能会释放数据，而静态互斥锁仍然持有一个现在无效的引用！
+
+#### What did we have to do to make this work in Rust?
+
+That's the great part: no changes to Rust were required to model this, and Rust as a language has NO IDEA what interrupts are.  
+这就是最棒的地方：不需要对 Rust 进行任何修改就能建立模型，而且 Rust 作为一种语言根本不知道中断是什么。
+
+This model fell entirely out of existing capabilities and rules of the Rust language:  
+该模型完全脱离了 Rust 语言的现有功能和规则：
+- At a hardware level, interrupts are typically modeled as "free functions" that take and return no data.  
+在硬件级别，中断通常被建模为不获取和返回数据的“自由函数”。
+- Therefore, to share something with them, that data must be stored as a static.  
+因此，要与他们共享某些内容，该数据必须存储为静态数据。
+- Anything stored in a static in Rust could be visible to multiple threads, therefore anything stored in a static must be truly immutable, or use some sort of thread-safe inner mutability.  
+Rust 中存储在静态中的任何内容都可以对多个线程可见，因此存储在静态中的任何内容都必须是真正不可变的，或者使用某种线程安全的内部可变性。
+- Any improper use of statics is therefore a compile-time error, due to the compiler's enforcement of `Send` and `Sync` marker traits, which are the basis of ALL thread safety in Rust.  
+因此，任何静态使用不当都会导致编译时错误，因为编译器强制执行 `Send` 和 `Sync` 标记 Trait，这是 Rust 中所有线程安全的基础。
+
+Therefore, as far as the Rust programming language is concerned:  
+因此，就 Rust 编程语言而言：
+
+**interrupts is threads**. 
+中断是线程。
+
+---
+
+#### Appendices
+
+Here's a little more context if you don't quite want to take me at my word, or want to know how these things work under the hood.  
+如果你不太相信我的话，或者想知道这些东西在幕后是如何工作的，这里有更多的背景信息。
+
+##### Appendix A: Atomics in more detail
+
+With atomics, the example code code would look a little like this:  
+使用原子，示例代码看起来有点像这样：
+
+```rust hl:2,6-10,25
+// Note: NOT mutable!
+static BLINK_RED: AtomicBool = AtomicBool::new(false);
+
+fn main() {
+    loop {
+        if BLINK_RED.load(Ordering::Relaxed) {
+            red_led_on();
+        } else {
+            green_led_on();
+        }
+        sleep_ms(250);
+
+        // We can turn both off, it's fine.
+        red_led_off();
+        green_led_off();
+        sleep_ms(750);
+    }
+}
+
+#[interrupt]
+fn button_press_handler() {
+    // a value XORd with true inverts it. There is a
+    // fetch_not function that does this directly, but it
+    // isn't stable, so this works.
+    BLINK_RED.fetch_xor(true, Ordering::Relaxed);
+}
+```
+
+If your CPU supports "Compare And Swap" instructions, then you can use methods like `fetch_xor`, or `compare_exchange`, which guarantee the Load, Modify, and Store operation happens "atomically".  
+如果您的 CPU 支持“比较和交换”指令，那么您可以使用 `fetch_xor` 或 `compare_exchange` 等方法，这保证了加载、修改和存储操作“原子地”发生。
+
+On Cortex-M devices, this uses the "LDREX" - "Load Exclusive", and "STREX" - "Store Exclusive" instructions, instead of "LDR" - Load and "STR" - Store instructions. At a hardware level, `fetch_xor` works a little like this:  
+在 Cortex-M 设备上，这使用“LDREX” - “加载独占”和“STREX” - “存储独占”指令，而不是“LDR” - “加载”和“STR” - “存储”指令。在硬件级别，`fetch_xor` 的工作方式有点像这样：
+
+```rust
+loop {
+    // This is the "LDREX"
+    let mut temp = BLINK_RED.load();
+    temp = !temp;
+
+    // This is the "STREX"
+    //
+    // This fails if anyone else has touched "BLINK_RED" since
+    // we loaded it. This is managed at a hardware level. If it
+    // fails, we just re-load the value and try again.
+    if BLINK_RED.store(temp).is_ok() {
+        break;
+    }
+}
+```
+
+This works totally fine, but there are two potential problems:  
+这工作得很好，但有两个潜在的问题：
+
+First: not all hardware supports "Compare and Swap" operations. Notably the _very_ popular Cortex-M0/Cortex-M0+ CPUs used in the Raspberry Pi RP2040, and hundreds of other popular low-cost/low-power devices, have NO support for LDREX/STREX or Compare and Swap operations.  
+第一：并非所有硬件都支持“比较和交换”操作。值得注意的是，RaspberryPiRP2040 中使用的非常流行的 Cortex-M0/Cortex-M0+CPU 以及数百种其他流行的低成本 / 低功耗设备不支持 LDREX/STREX 或比较和交换操作。
+
+Second: Atomics only work for data up to a certain size, typically the size of a register on your CPU (e.g. 32-bits on Cortex-M), though sometimes more or less (x86_64 and aarch64 do have support for 128-bit atomics despite being 64-bit processors). If your data is larger than this, you can't use atomics in this way.  
+第二：原子仅适用于达到一定大小的数据，通常是 CPU 上寄存器的大小（例如 Cortex-M 上的 32 位），但有时会更大或更小（x86_64 和 aarch64 虽然是 64 位处理器，但也支持 128 位原子）。如果数据大于此值，就不能使用原子。
+
+In these cases, you need to use a Mutex instead.  
+在这些情况下，您需要使用互斥锁。
+
+###### A `volatile` aside
+
+**NOTE**: Notice that I didn't mention _volatile_ at all in this section!  
+注意：请注意，我在本节中根本没有提到易失性！
+
+Traditionally volatile access was used in C and C++ for sharing data with interrupts, however this was due to the fact that atomics _did not exist_ in the standards until C11 and C++11.  
+传统上，C 和 C++ 中使用易失性访问来通过中断共享数据，但这是因为直到 C11 和 C++11 之前标准中才存在原子。
+
+Volatile is **not** intended to be used for synchronization, and depending on whether you have multiple cores, or data cache on your CPU, volatile may not be sufficient to perform the kind of data synchronization we've discussed here.  
+易失性并不是用来同步的，根据你是否有多个内核或 CPU 上的数据缓存，易失性可能不足以执行我们在这里讨论的数据同步。
+
+In general, volatile should ONLY be used for interacting with memory-mapped IO, such as hardware peripherals.  
+一般来说，易失性只能用于与内存映射 I/O 交互，例如硬件外设。
+
+This is documented well in the [Linux Kernel Docs](https://www.kernel.org/doc/html/latest/process/volatile-considered-harmful.html).  
+Linux 内核文档对此进行了详细记录。
+
+##### Appendix B: Mutex
+
+On a desktop, a Mutex is typically something provided by your operating system. If one thread locks a mutex, then other threads will be stopped by the operating system if they attempt to access the same data, and will only be allowed to continue once the mutex has been released.  
+在桌面上，互斥锁通常是由操作系统提供的。如果一个线程锁定了互斥锁，则其他线程在尝试访问相同数据时将被操作系统停止，并且只有在互斥锁被释放后才允许继续运行。
+
+With a Mutex, our example code would look like this:  
+使用互斥锁，我们的示例代码将如下所示：
+
+```rust hl:2,8-11,30-31
+// Note: NOT mutable!
+static BLINK_RED: Mutex<bool> = Mutex::new(false);
+
+fn main() {
+    loop {
+        // Lock the mutex, read the value, then drop
+        // the mutex guard to allow others to access it
+        let blink_red = {
+            let guard = BLINK_RED.lock();
+            *guard
+        };
+
+        if blink_red {
+            red_led_on();
+        } else {
+            green_led_on();
+        }
+        sleep_ms(250);
+
+        // We can turn both off, it's fine.
+        red_led_off();
+        green_led_off();
+        sleep_ms(750);
+    }
+}
+
+#[interrupt]
+fn button_press_handler() {
+    // Lock the mutex
+    let mut guard = BLINK_RED.lock();
+    *guard = !guard;
+    // drop the mutex when we return
+}
+```
+
+But this is a problem on embedded! I said before that interrupts can't be paused, they run to completion. What happens if the button press occurs RIGHT as the main thread has locked the data?  
+但这是嵌入式的问题！我之前说过中断不能暂停，它们会一直运行到完成。如果在主线程锁定数据时按下按钮，会发生什么？
+
+The interrupt would attempt to lock the mutex, but it would fail as it is already locked. If we used a desktop-style mutex, then our program would permanently deadlock. This is not ideal!  
+中断将尝试锁定互斥锁，但它会失败，因为它已经被锁定。如果我们使用桌面式互斥锁，那么我们的程序将永久死锁。这并不理想！
+
+The simplest way to deal with this on embedded is to use a **Critical Section**, which is a fancy way of saying "disable all interrupts". If we can't be pre-empted while holding the mutex, then there's no problem! This only works on systems without "real" threads, unless the critical section also prevents the system from switching threads while a critical section is active.  
+在嵌入式上处理这个问题的最简单方法是使用**临界区**，也是“禁用所有中断”的一种花哨说法。如果我们在持有互斥锁时不能被抢占，那就没问题了！这仅适用于没有“真实”线程的系统，除非临界区还能防止系统在临界区处于活动状态时切换线程。
+
+If we disable interrupts _inside_ of an interrupt, that's fine too! It just means that no NEW interrupts will start running until we enable them again, and our current interrupt will keep running until it is done. We don't need to worry about the "main" code running until all interrupts are done.  
+如果我们在中断内禁用中断，那也没关系！这只是意味着在我们再次启用它们之前，不会有新的中断开始运行，并且当前的中断将继续运行直到完成。在所有中断完成之前，我们不需要担心“主”代码的运行。
+
+This works really well if you only need very short critical sections. Disabling and Enabling interrupts is very quick, and the time taken to load or store data is usually not significant.  
+如果您只需要非常短的临界区，那么这非常有效。禁用和启用中断非常快，加载或存储数据所需的时间通常并不重要。
+
+There are some potential downsides to critical sections:  
+临界区有一些潜在的缺点：
+
+The "naive" disable-all-interrupts approach is a little overpowered, we prevent ALL interrupts from running, even ones that don't share this data. Frameworks like [RTIC](https://rtic.rs/2/book/en/) have clever ways of handling this more precisely. This is less important if your critical sections are very short.  
+“天真的”禁用所有中断方法有点强大，我们阻止所有中断运行，即使是那些不共享此数据的中断。像 RTIC 这样的框架有巧妙的方法可以更精确地处理这个问题。如果您的临界区非常短，那么这一点就不那么重要了。
+
+If you can't keep your critical sections short, AND you have some time-sensitive or hard- or soft-realtime system, a critical section could cause you to miss some deadline.  
+如果您无法保持临界区简短，并且您有一些时间敏感或硬实时或软实时系统，则临界区可能会导致您错过某些最后期限。
+
+"Which kind of mutex should I use" is outside of the scope of this article, and is generally a more broad system/data design question in my opinion.  
+“我应该使用哪种互斥锁”超出了本文的范围，在我看来，它通常是一个更广泛的系统 / 数据设计问题。
+
+##今日疑问
+
+我知道什么？
+我想知道什么？
+我学到了什么？
+我该怎么学？
+这样学效果怎么样？是哪里有问题？
+这样学能成功的话，为什么能行？
+
+##浮墨笔记
+
+周五 / 周六统一处理。
+
+##每日反思
+
+还是读代码看看。
+
+---
+
+下午去“三峡新”能源宣讲，不过我估计又是一个很拉的公司；
+投吧，试试看。
+
+![[三峡新能源简 历投递.png]]
+
+>您已成功申请了【中国长江三峡集团有限公司 - 校招】的职位：
+>第 1 志愿：机械工程 / 机械电子工程 / 材料成型及控制工程 / 过程装备与控制工程 / 机械设计制造及其自动化
+>您的简历编号为：393632，请牢记此编号，并且留意后续通知。
+
+如果能留在辽宁，去也不是不行，而且也不一定能留下。这工作已经找得我自信没了。
+
+---
+
+玩了一天 Nvim，逐渐摸到门道，可以调试 Rust 和 Go 代码了。
+
+## MEMO
+无。
+{huhuhuhu}
